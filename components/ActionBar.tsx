@@ -9,14 +9,19 @@ import { ICON_STROKE_WIDTH } from "@/lib/constants";
 import { useMode } from "@/lib/hooks/useModHook";
 import { useAtom } from "jotai";
 import { ArrowLeftIcon, ClipboardCopy, DeleteIcon, DownloadIcon, FolderInputIcon, RefreshCcwIcon, UploadIcon, XIcon } from "lucide-react";
-import { useCallback } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Checkbox } from "./ui/checkbox";
+import { LsLongFormat } from "@/lib/types";
+import { dialogContextAtom } from "@/lib/atoms/dialogContextAtom";
 
 export const ActionBar = () => {
     const { mode, setMode, setModeContext } = useMode();
     const [selecteds, setSelecteds] = useAtom(selectedsAtom);
     const [path, setPath] = useAtom(pathAtom);
     const [content] = useAtom(contentAtom);
+    const [localType, setLocalType] = useState<LsLongFormat['fileType'] | undefined>(undefined);
+    const [, setDialogContext] = useAtom(dialogContextAtom);
+    const [selectedWithContent, setSelectedWithContent] = useState<LsLongFormat[]>([]);
 
     const goBack = useCallback(() => {
         setPath((prev) => {
@@ -42,6 +47,33 @@ export const ActionBar = () => {
             }
         });
     }
+
+    useEffect(() => {
+        if (selecteds.length > 0) {
+            setSelectedWithContent(content.raw.filter((item) => selecteds.includes(item.id)));
+        } else {
+            setSelectedWithContent([]);
+        }
+    }, [selecteds, content.raw]);
+
+    useEffect(() => {
+        if (selecteds.length === 1) {
+            const item = content.raw.find((item) => item.id === selecteds[0]);
+            if (item) {
+                setLocalType(item.fileType);
+            }
+        } else {
+            // check if all selected items are of the same type
+            const types = content.raw.filter((item) => selecteds.includes(item.id)).map((item) => item.fileType);
+            if (types.every((type) => type === 'file')) {
+                setLocalType('file');
+            } else if (types.every((type) => type === 'directory')) {
+                setLocalType('directory');
+            } else {
+                setLocalType(undefined);
+            }
+        }
+    }, [selecteds, content.raw]);
 
     if (mode) {
         return (
@@ -99,10 +131,16 @@ export const ActionBar = () => {
                 </button>
                 <DownloadIcon className="w-6 h-6" strokeWidth={ICON_STROKE_WIDTH} />
                 <div className="border-r h-full"></div>
-                <FolderInputIcon className="w-6 h-6" strokeWidth={ICON_STROKE_WIDTH} />
-                <ClipboardCopy className="w-6 h-6" strokeWidth={ICON_STROKE_WIDTH} />
+                <button onClick={() => setMode('move', localType)} disabled={!localType} className="disabled:opacity-50 disabled:cursor-not-allowed">
+                    <FolderInputIcon className="w-6 h-6" strokeWidth={ICON_STROKE_WIDTH} />
+                </button>
+                <button onClick={() => setMode('copy', localType)} disabled={!localType} className="disabled:opacity-50 disabled:cursor-not-allowed">
+                    <ClipboardCopy className="w-6 h-6" strokeWidth={ICON_STROKE_WIDTH} />
+                </button>
                 <div className="border-r h-full"></div>
-                <DeleteIcon className="w-6 h-6" strokeWidth={ICON_STROKE_WIDTH} />
+                <button onClick={() => setDialogContext({ currentDialog: localType == 'directory' ? 'delete-folder' : 'delete-file', ref: selectedWithContent[0] ? selectedWithContent[0] : null })} disabled={!localType} className="disabled:opacity-50 disabled:cursor-not-allowed">
+                    <DeleteIcon className="w-6 h-6" strokeWidth={ICON_STROKE_WIDTH} />
+                </button>
             </div>
             <div>
                 <button className="p-4" onClick={() => setSelecteds([])}>

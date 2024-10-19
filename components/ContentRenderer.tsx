@@ -14,12 +14,14 @@ import { LsLongFormat } from "@/lib/types";
 import { useAtom } from "jotai";
 import { ClipboardCopy, DeleteIcon, DownloadIcon, Edit2Icon, FileIcon, FileQuestionIcon, Folder, FolderInputIcon, LinkIcon, RefreshCcwIcon } from "lucide-react";
 import { DeleteFile } from "./context/DeleteFile";
+import { directoryAtom } from "@/lib/atoms/directoryAtom";
 
 export const ContentRenderer = () => {
     const { mode, setMode } = useMode();
     const [content] = useAtom(contentAtom);
     const [selecteds, setSelecteds] = useAtom(selectedsAtom);
     const [path, setPath] = useAtom(pathAtom);
+    const [, setDirectory] = useAtom(directoryAtom);
     const [, setDialogContext] = useAtom(dialogContextAtom);
 
     const selectItem = (id: string) => {
@@ -40,6 +42,7 @@ export const ContentRenderer = () => {
                 pathStack: [...prev.pathStack, prev.currentPath],
                 invalidate: true,
             }));
+            setDirectory((prev) => ({ ...prev, invalidate: true }))
         }
     }
 

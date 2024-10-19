@@ -5,11 +5,13 @@ import { useEffect } from "react";
 import { LsLongFormat } from "../types";
 import { dialogContextAtom } from "../atoms/dialogContextAtom";
 import { selectedsAtom } from "../atoms/selectedsAtom";
+import { directoryAtom } from "../atoms/directoryAtom";
 
 export const useMode = () => {
     const [mode, _setMode] = useAtom(modeAtom);
     const [modeContext, _setModeContext] = useAtom(modeContextAtom);
     const [path, setPath] = useAtom(pathAtom);
+    const [, setDirectory] = useAtom(directoryAtom);
     const [, setDialogContext] = useAtom(dialogContextAtom);
     const [selecteds, setSelecteds] = useAtom(selectedsAtom);
 
@@ -98,6 +100,7 @@ export const useMode = () => {
 
         if (res.success) {
             setPath((prev) => ({ ...prev, invalidate: true }))
+            setDirectory((prev) => ({ ...prev, invalidate: true }))
             setSelecteds([]);
             return res;
         }
