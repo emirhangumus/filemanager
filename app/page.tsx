@@ -9,6 +9,7 @@ import { Input } from "@/components/ui/input";
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from "@/components/ui/resizable";
 import { contentAtom } from "@/lib/atoms/contentAtom";
 import { pathAtom } from "@/lib/atoms/pathAtom";
+import { useMode } from "@/lib/hooks/useModHook";
 import { cn } from "@/lib/utils";
 import { useAtom } from "jotai";
 import { useCallback, useEffect, useState } from "react";
@@ -18,6 +19,7 @@ export default function Home() {
   const [, setContent] = useAtom(contentAtom);
   const [searchValue, setSearchValue] = useState("");
   const [openSearch, setOpenSearch] = useState(false);
+  const { mode } = useMode();
 
   const goBack = useCallback(() => {
     setPath((prev) => {
@@ -122,7 +124,7 @@ export default function Home() {
     <div className="container mx-auto h-[800px] border relative">
       <ResizablePanelGroup
         direction="horizontal"
-        className="border"
+        className={cn("border", { "border-indigo-800 shadow shadow-indigo-400": mode != null })}
       >
         <ResizablePanel defaultSize={16}>
           <DirectoryRenderer />
