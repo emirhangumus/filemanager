@@ -1,8 +1,8 @@
 import { atom } from "jotai";
-import { LsLongFormat } from "../types";
+import { ExecType, LsLongFormat } from "../types";
 
 type DialogContext = {
-    currentDialog: null | string;
+    currentDialog: null | string | ExecType;
     ref: LsLongFormat | null;
 }
 

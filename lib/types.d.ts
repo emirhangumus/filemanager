@@ -27,3 +27,5 @@ export type LsLongFormat = {
 export type DirectoryTree = {
     [key: string]: DirectoryTree;
 }
+
+export type ExecType = "create-dir" | "delete-dir" | "delete-file" | "move" | "copy";

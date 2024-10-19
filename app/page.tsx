@@ -2,7 +2,9 @@
 
 import { ActionBar } from "@/components/ActionBar";
 import { ContentRenderer } from "@/components/ContentRenderer";
+import { ModeDialog } from "@/components/context/ModeDialog";
 import { DirectoryRenderer } from "@/components/DirectoryRenderer";
+import { TestComponent } from "@/components/TestComponent";
 import { Input } from "@/components/ui/input";
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from "@/components/ui/resizable";
 import { contentAtom } from "@/lib/atoms/contentAtom";
@@ -143,6 +145,8 @@ export default function Home() {
           <Input type="text" value={searchValue} onChange={(e) => setSearchValue(e.target.value)} id="filesearch" placeholder="Search..." />
         </div>
       </div>
+      <ModeDialog />
+      <TestComponent />
     </div>
   );
 }
