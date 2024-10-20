@@ -1,5 +1,6 @@
 import { clsx, type ClassValue } from "clsx"
 import { twMerge } from "tailwind-merge"
+import { VALID_ARCHIVE_EXTENSIONS } from "./constants";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
@@ -22,3 +23,8 @@ export function realMerge(to: Record<string, any>, from: Record<string, any>) {
   }
   return to;
 };
+
+export const isArchive = (extenstion: string | null): boolean => {
+  if (!extenstion) return false;
+  return VALID_ARCHIVE_EXTENSIONS.includes(extenstion as typeof VALID_ARCHIVE_EXTENSIONS[number]);
+}

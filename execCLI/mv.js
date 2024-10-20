@@ -37,4 +37,3 @@ if (!FM_SELECT_TYPE) {
 console.log(FM_TO, FM_ITEMS, FM_SELECT_TYPE);
 
 move(FM_TO, JSON.parse(FM_ITEMS), FM_SELECT_TYPE);
-process.exit(0);

@@ -37,4 +37,3 @@ if (!FM_SELECT_TYPE) {
 }
 
 copy(FM_TO, JSON.parse(FM_ITEMS), FM_SELECT_TYPE);
-process.exit(0);

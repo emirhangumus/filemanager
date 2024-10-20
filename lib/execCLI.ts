@@ -78,7 +78,16 @@ export const execCLI = async (type: keyof typeof actionSchemaMap, validation: ty
             FM_NAME: name,
             FM_PATH: path,
         }
-    } else {
+    } else if (type === 'extract') {
+        const { target, source, extractType } = validation.parse(data);
+        file = "extract";
+        env = {
+            FM_TARGET: target,
+            FM_SOURCE: source,
+            FM_EXTRACT_TYPE: extractType,
+        }
+    }
+    else {
         throw new Error("Invalid type");
     }
 

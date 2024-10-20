@@ -26,4 +26,3 @@ if (!FM_PATH) {
 }
 
 createFile(FM_PATH, FM_TMPSTR);
-process.exit(0);

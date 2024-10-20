@@ -24,4 +24,3 @@ if (!FM_PATH) {
 }
 
 mkdir(FM_NAME, FM_PATH);
-process.exit(0);

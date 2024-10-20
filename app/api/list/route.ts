@@ -1,6 +1,6 @@
 import { CONTENT_LIST_COMMAND, DIRECTORY_LIST_COMMAND } from "@/lib/constants";
 import { r } from "@/lib/r";
-import { LsLongFormat, DirectoryTree } from "@/lib/types";
+import type { DirectoryTree, LsLongFormat } from "@/lib/types";
 import { spawn } from "child_process";
 import { z } from "zod";
 
@@ -39,9 +39,6 @@ export async function POST(request: Request) {
             output += chunk;
         }
 
-        console.log(output);
-
-
         const files = output.split("\n").map((line) => {
             const [permissions, size, owner, month, time, ...n] = line.split(/\s+/);
             const name = trimChars(n.join(" "), "\'");
@@ -65,6 +62,10 @@ export async function POST(request: Request) {
                 },
             };
             const lastModified = new Date(`${month} ${time}`);
+            let extension = name.split(".").pop() || null;
+            if (extension === name) {
+                extension = null;
+            }
 
             return {
                 id: `${path}/${name}`,
@@ -74,6 +75,7 @@ export async function POST(request: Request) {
                 size: parseInt(size),
                 lastModified,
                 name,
+                fileExtension: extension,
             } as LsLongFormat;
         }).filter((file) => !!file);
 

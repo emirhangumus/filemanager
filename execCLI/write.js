@@ -24,4 +24,3 @@ if (!FM_CONTENT) {
 }
 
 write(FM_PATH, FM_CONTENT);
-process.exit(0);

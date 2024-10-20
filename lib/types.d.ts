@@ -22,6 +22,7 @@ export type LsLongFormat = {
     size: number;
     lastModified: Date;
     name: string;
+    fileExtension: string | null;
 }
 
 export type DirectoryTree = {

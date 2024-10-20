@@ -12,8 +12,10 @@ import { selectedsAtom } from "@/lib/atoms/selectedsAtom";
 import { ICON_STROKE_WIDTH } from "@/lib/constants";
 import { useMode } from "@/lib/hooks/useModHook";
 import { LsLongFormat } from "@/lib/types";
+import { isArchive } from "@/lib/utils";
 import { useAtom } from "jotai";
-import { CopyIcon, DeleteIcon, DownloadIcon, Edit2Icon, FileIcon, FileQuestionIcon, Folder, FolderInputIcon, LinkIcon, RefreshCcwIcon, TextCursorInputIcon } from "lucide-react";
+import { CopyIcon, DeleteIcon, DownloadIcon, Edit2Icon, FileArchiveIcon, FileIcon, FileQuestionIcon, Folder, FolderInputIcon, LinkIcon, RefreshCcwIcon, TextCursorInputIcon } from "lucide-react";
+import { ExtractArchive } from "./ExtractArchive";
 import { FileEdit } from "./FileEdit";
 
 export const ContentRenderer = () => {
@@ -75,18 +77,21 @@ export const ContentRenderer = () => {
                         <ContextMenuTrigger className="flex items-center p-2 border-b hover:bg-zinc-900 transition-colors gap-8 px-4" onDoubleClick={() => onDoubleClick(file)}>
                             {!mode ? <Checkbox checked={selecteds.includes(file.id)} onCheckedChange={() => selectItem(file.id)} /> : null}
                             <div className="flex items-center gap-2">
-                                <FileIconRenderer fileType={file.fileType} />
+                                <FileIconRenderer fileType={file.fileType} extension={file.fileExtension} />
                                 <span>{file.name}</span>
                             </div>
                         </ContextMenuTrigger>
                         <ContextMenuContent className="w-64">
-                            {file.fileType === 'file' && (
+                            {file.fileType === 'file' && !isArchive(file.fileExtension) && (
                                 <ContextMenuItem onClick={() => {
                                     setAppState({ state: 'editing', loading: false, ref: file });
                                 }}>
                                     <Edit2Icon className="w-4 h-4 mr-2" strokeWidth={ICON_STROKE_WIDTH} />
                                     Edit
                                 </ContextMenuItem>
+                            )}
+                            {isArchive(file.fileExtension) && (
+                                <ExtractArchive file={file} />
                             )}
                             <ContextMenuItem onClick={() => setDialogContext({ currentDialog: 'rename', ref: file })}>
                                 <TextCursorInputIcon className="w-4 h-4 mr-2" strokeWidth={ICON_STROKE_WIDTH} />
@@ -111,7 +116,7 @@ export const ContentRenderer = () => {
                                 Delete
                             </ContextMenuItem>
                             <ContextMenuSeparator />
-                            <ContextMenuItem>
+                            <ContextMenuItem onClick={() => setPath((prev) => ({ ...prev, invalidate: true }))}>
                                 <RefreshCcwIcon className="w-4 h-4 mr-2" strokeWidth={ICON_STROKE_WIDTH} />
                                 Refresh
                             </ContextMenuItem>
@@ -127,7 +132,12 @@ export const ContentRenderer = () => {
     );
 }
 
-const FileIconRenderer = ({ fileType }: { fileType: LsLongFormat['fileType'] }) => {
+const FileIconRenderer = ({ fileType, extension }: { fileType: LsLongFormat['fileType'], extension: LsLongFormat['fileExtension'] }) => {
+
+    if (isArchive(extension)) {
+        return <FileArchiveIcon className="w-6 h-6" strokeWidth={ICON_STROKE_WIDTH} />
+    }
+
     return (
         <>
             {fileType === 'file' && <FileIcon className="w-6 h-6" strokeWidth={ICON_STROKE_WIDTH} />}

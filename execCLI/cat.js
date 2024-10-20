@@ -20,4 +20,3 @@ if (!FM_ITEMS) {
 }
 
 cat(JSON.parse(FM_ITEMS));
-process.exit(0);
