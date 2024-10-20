@@ -2,6 +2,9 @@
 
 import { ActionBar } from "@/components/ActionBar";
 import { ContentRenderer } from "@/components/ContentRenderer";
+import { DeleteFile } from "@/components/context/DeleteFile";
+import { DeleteFolder } from "@/components/context/DeleteFolder";
+import { FileUpload } from "@/components/context/FileUpload";
 import { ModeDialog } from "@/components/context/ModeDialog";
 import { DirectoryRenderer } from "@/components/DirectoryRenderer";
 import { SearchPopup } from "@/components/SearchPopup";
@@ -74,6 +77,9 @@ export default function Home() {
       </ResizablePanelGroup>
       <SearchPopup />
       <ModeDialog />
+      <DeleteFolder />
+      <DeleteFile />
+      <FileUpload />
       <TestComponent />
     </div>
   );

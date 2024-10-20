@@ -1,6 +1,5 @@
 "use client";
 
-import { DeleteFolder } from "@/components/context/DeleteFolder";
 import { Checkbox } from "@/components/ui/checkbox";
 import { ContextMenu, ContextMenuContent, ContextMenuItem, ContextMenuSeparator, ContextMenuTrigger } from "@/components/ui/context-menu";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -15,7 +14,6 @@ import { useMode } from "@/lib/hooks/useModHook";
 import { LsLongFormat } from "@/lib/types";
 import { useAtom } from "jotai";
 import { CopyIcon, DeleteIcon, DownloadIcon, Edit2Icon, FileIcon, FileQuestionIcon, Folder, FolderInputIcon, LinkIcon, RefreshCcwIcon, TextCursorInputIcon } from "lucide-react";
-import { DeleteFile } from "./context/DeleteFile";
 import { FileEdit } from "./FileEdit";
 
 export const ContentRenderer = () => {
@@ -124,8 +122,6 @@ export const ContentRenderer = () => {
                         </ContextMenuContent>
                     </ContextMenu>
                 ))}
-                <DeleteFolder />
-                <DeleteFile />
             </ScrollArea>
         </>
     );

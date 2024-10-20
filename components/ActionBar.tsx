@@ -114,7 +114,7 @@ export const ActionBar = () => {
                         <ArrowLeftIcon className="w-6 h-6" strokeWidth={ICON_STROKE_WIDTH} />
                     </button>
                     <NewFolder />
-                    <Button>
+                    <Button onClick={() => setDialogContext({ currentDialog: 'file-upload', ref: null })}>
                         <UploadIcon className="w-6 h-6" />
                         Upload Files
                     </Button>
