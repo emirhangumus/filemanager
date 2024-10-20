@@ -1,6 +1,5 @@
 import { r } from "@/lib/r";
-import fs from "fs";
-import path from "path";
+import { spawn } from "child_process";
 import { z } from "zod";
 
 /**
@@ -11,19 +10,25 @@ import { z } from "zod";
  * - Add security for file operations (e.g. check if the user has the right permissions - User can not delete other user's files)
  */
 
+const typeSchema = z.enum(["create-dir", "delete-dir", "delete-file", "move", "copy", "cat-file", "write-file"]);
+type ActionTypes = z.infer<typeof typeSchema>;
+
 const schema = z.object({
     path: z.string(),
-    type: z.enum(["create-dir", "delete-dir", "delete-file", "move", "copy"])
+    type: typeSchema,
 });
 
-const actionSchemaMap = {
+const actionSchemaMap: Record<ActionTypes, z.ZodObject<any, any>> = {
     "create-dir": z.object({
+        path: z.string(),
         name: z.string(),
     }),
     "delete-dir": z.object({
+        path: z.string(),
         name: z.string(),
     }),
     "delete-file": z.object({
+        path: z.string(),
         name: z.string(),
     }),
     "move": z.object({
@@ -38,105 +43,118 @@ const actionSchemaMap = {
         items: z.array(z.string()),
         selectType: z.enum(["file", "directory"]),
     }),
+    "cat-file": z.object({
+        items: z.array(z.string()),
+    }),
+    "write-file": z.object({
+        path: z.string(),
+        content: z.string(),
+    }),
 }
 
 export async function POST(request: Request) {
     try {
         const body = await request.json();
-        const { path, type } = schema.parse(body);
+        const { type } = schema.parse(body);
 
-        switch (type) {
-            case "create-dir":
-                return await mkdir(actionSchemaMap[type], body, path);
-            case "delete-dir":
-                return await deleteFolder(actionSchemaMap[type], body, path);
-            case "delete-file":
-                return await deleteFile(actionSchemaMap[type], body, path);
-            case "copy":
-                return await copy(actionSchemaMap[type], body);
-            case "move":
-                return await move(actionSchemaMap[type], body);
-        }
+        const execResult = await execCLI(type, actionSchemaMap[type], body);
+        console.log("execResult -> ", execResult);
 
-    } catch {
+        return r({ success: true, data: execResult });
+
+    } catch (e) {
+        console.error(e);
         return r({ success: false, error: "Invalid input" });
     }
 }
 
-const mkdir = async (commandShema: typeof actionSchemaMap['create-dir'], body: any, p: string) => {
-    try {
+const execCLI = async (type: keyof typeof actionSchemaMap, validation: typeof actionSchemaMap[keyof typeof actionSchemaMap], data: any) => {
 
-        let { name } = commandShema.parse(body);
-        name = name.trim();
+    let file: string | undefined = undefined;
+    let env = {};
 
-        fs.mkdirSync(path.join(p, name));
-        return r({ success: true });
-    } catch (e: unknown) {
-        if (e instanceof Error && e.message.includes("EEXIST")) {
-            return r({ success: false, error: "Folder already exists" });
+    if (type === 'create-dir') {
+        const { name, path } = validation.parse(data);
+        file = "mkdir";
+        env = {
+            FM_NAME: name,
+            FM_PATH: path,
         }
-        return r({ success: false, error: "An error occurred" });
+    } else if (type === 'delete-dir') {
+        const { name, path } = validation.parse(data);
+        file = "rmdir";
+        env = {
+            FM_NAME: name,
+            FM_PATH: path,
+        }
+    } else if (type === 'delete-file') {
+        const { name, path } = validation.parse(data);
+        file = "rm";
+        env = {
+            FM_NAME: name,
+            FM_PATH: path,
+        }
+    } else if (type === 'copy') {
+        const { from, to, items, selectType } = validation.parse(data);
+        file = "cp";
+        env = {
+            FM_FROM: from,
+            FM_TO: to,
+            FM_ITEMS: JSON.stringify(items),
+            FM_SELECT_TYPE: selectType,
+        }
+    } else if (type === 'move') {
+        const { from, to, items, selectType } = validation.parse(data);
+        file = "mv";
+        env = {
+            FM_FROM: from,
+            FM_TO: to,
+            FM_ITEMS: JSON.stringify(items),
+            FM_SELECT_TYPE: selectType,
+        }
+    } else if (type === 'write-file') {
+        const { content, path } = validation.parse(data);
+        file = "write";
+        env = {
+            FM_CONTENT: content,
+            FM_PATH: path,
+        }
+    } else if (type === 'cat-file') {
+        const { items } = validation.parse(data);
+        file = "cat";
+        env = {
+            FM_ITEMS: JSON.stringify(items),
+        }
+    } else {
+        throw new Error("Invalid type");
     }
-}
 
-const deleteFolder = async (commandShema: typeof actionSchemaMap['delete-dir'], body: any, p: string) => {
-    try {
-        let { name } = commandShema.parse(body);
-        name = name.trim();
-
-        fs.rmdirSync(path.join(p, name), { recursive: true });
-        return r({ success: true });
-    } catch {
-        return r({ success: false, error: "An error occurred" });
+    if (!file) {
+        throw new Error("Invalid type");
     }
-}
 
-const deleteFile = async (commandShema: typeof actionSchemaMap['delete-file'], body: any, p: string) => {
-    try {
-        let { name } = commandShema.parse(body);
-        name = name.trim();
+    const username = "emirhan"; // TODO: Get the username from the database
+    const cmd = `su -s /bin/bash -c 'node ./execCLI/${file}.js' ${username}`;
 
-        fs.unlinkSync(path.join(p, name));
-        return r({ success: true });
-    } catch {
-        return r({ success: false, error: "An error occurred" });
+    console.log("Executing command...", cmd);
+
+    const child = spawn(cmd, {
+        shell: true,
+        env: {
+            ...process.env,
+            ...env,
+        }
+    });
+
+    let output = "";
+
+    for await (const chunk of child.stdout) {
+        output += chunk;
     }
-}
 
-const copy = async (commandShema: typeof actionSchemaMap['copy'], body: any) => {
-    try {
-        let { to, items, selectType } = commandShema.parse(body);
-        to = to.trim();
-
-        items.forEach((item: string) => {
-            if (selectType === "directory") {
-                fs.cpSync(item, path.join(to, path.basename(item)), { recursive: true });
-            } else {
-                fs.copyFileSync(item, path.join(to, path.basename(item)));
-            }
-        });
-        return r({ success: true });
-    } catch (e) {
-        console.log(e);
-
-        return r({ success: false, error: "An error occurred" });
+    for await (const chunk of child.stderr) {
+        output += chunk;
     }
-}
 
-const move = async (commandShema: typeof actionSchemaMap['move'], body: any) => {
-    try {
-        let { to, items, selectType } = commandShema.parse(body);
-        to = to.trim();
-
-        items.forEach((item: string) => {
-            if (selectType === "directory") {
-                fs.renameSync(item, path.join(to, path.basename(item)));
-            } else {
-                fs.renameSync(item, path.join(to, path.basename(item)));
-            }
-        });
-        return r({ success: true });
-    } catch {
-        return r({ success: false, error: "An error occurred" });
-    }
+    return output;
 }

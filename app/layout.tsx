@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { inter } from "./fonts";
 import "./globals.css";
+import { Toaster } from "@/components/ui/sonner";
 
 export const metadata: Metadata = {
   title: "BashUI by MadCorp",
@@ -20,6 +21,7 @@ export default function RootLayout({
         <div className="grid place-items-center h-screen">
           {children}
         </div>
+        <Toaster />
       </body>
     </html>
   );

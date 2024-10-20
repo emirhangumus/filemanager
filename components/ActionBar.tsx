@@ -8,11 +8,13 @@ import { selectedsAtom } from "@/lib/atoms/selectedsAtom";
 import { ICON_STROKE_WIDTH } from "@/lib/constants";
 import { useMode } from "@/lib/hooks/useModHook";
 import { useAtom } from "jotai";
-import { ArrowLeftIcon, ClipboardCopy, DeleteIcon, DownloadIcon, FolderInputIcon, RefreshCcwIcon, UploadIcon, XIcon } from "lucide-react";
+import { ArrowLeftIcon, CopyIcon, DeleteIcon, DownloadIcon, FolderInputIcon, RefreshCcwIcon, UploadIcon, XIcon } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 import { Checkbox } from "./ui/checkbox";
 import { LsLongFormat } from "@/lib/types";
 import { dialogContextAtom } from "@/lib/atoms/dialogContextAtom";
+import { FileEditHeader } from "./FileEdit";
+import { appStateAtom } from "@/lib/atoms/appStateAtom";
 
 export const ActionBar = () => {
     const { mode, setMode, setModeContext } = useMode();
@@ -22,6 +24,7 @@ export const ActionBar = () => {
     const [localType, setLocalType] = useState<LsLongFormat['fileType'] | undefined>(undefined);
     const [, setDialogContext] = useAtom(dialogContextAtom);
     const [selectedWithContent, setSelectedWithContent] = useState<LsLongFormat[]>([]);
+    const [appState] = useAtom(appStateAtom);
 
     const goBack = useCallback(() => {
         setPath((prev) => {
@@ -75,6 +78,10 @@ export const ActionBar = () => {
         }
     }, [selecteds, content.raw]);
 
+    if (appState.state === 'editing') {
+        return <FileEditHeader />;
+    }
+
     if (mode) {
         return (
             <div className="flex items-center justify-between w-full">
@@ -90,7 +97,7 @@ export const ActionBar = () => {
                         Cancel
                     </Button>
                     <Button onClick={() => setModeContext()}>
-                        <ClipboardCopy className="w-6 h-6" strokeWidth={ICON_STROKE_WIDTH} />
+                        <CopyIcon className="w-6 h-6" strokeWidth={ICON_STROKE_WIDTH} />
                         {mode === 'move' ? 'Move' : 'Copy'}
                     </Button>
                 </div>
@@ -135,7 +142,7 @@ export const ActionBar = () => {
                     <FolderInputIcon className="w-6 h-6" strokeWidth={ICON_STROKE_WIDTH} />
                 </button>
                 <button onClick={() => setMode('copy', localType)} disabled={!localType} className="disabled:opacity-50 disabled:cursor-not-allowed">
-                    <ClipboardCopy className="w-6 h-6" strokeWidth={ICON_STROKE_WIDTH} />
+                    <CopyIcon className="w-6 h-6" strokeWidth={ICON_STROKE_WIDTH} />
                 </button>
                 <div className="border-r h-full"></div>
                 <button onClick={() => setDialogContext({ currentDialog: localType == 'directory' ? 'delete-folder' : 'delete-file', ref: selectedWithContent[0] ? selectedWithContent[0] : null })} disabled={!localType} className="disabled:opacity-50 disabled:cursor-not-allowed">

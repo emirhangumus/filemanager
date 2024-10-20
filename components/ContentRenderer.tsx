@@ -4,17 +4,19 @@ import { DeleteFolder } from "@/components/context/DeleteFolder";
 import { Checkbox } from "@/components/ui/checkbox";
 import { ContextMenu, ContextMenuContent, ContextMenuItem, ContextMenuSeparator, ContextMenuTrigger } from "@/components/ui/context-menu";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { appStateAtom } from "@/lib/atoms/appStateAtom";
 import { contentAtom } from "@/lib/atoms/contentAtom";
 import { dialogContextAtom } from "@/lib/atoms/dialogContextAtom";
+import { directoryAtom } from "@/lib/atoms/directoryAtom";
 import { pathAtom } from "@/lib/atoms/pathAtom";
 import { selectedsAtom } from "@/lib/atoms/selectedsAtom";
 import { ICON_STROKE_WIDTH } from "@/lib/constants";
 import { useMode } from "@/lib/hooks/useModHook";
 import { LsLongFormat } from "@/lib/types";
 import { useAtom } from "jotai";
-import { ClipboardCopy, DeleteIcon, DownloadIcon, Edit2Icon, FileIcon, FileQuestionIcon, Folder, FolderInputIcon, LinkIcon, RefreshCcwIcon } from "lucide-react";
+import { CopyIcon, DeleteIcon, DownloadIcon, Edit2Icon, FileIcon, FileQuestionIcon, Folder, FolderInputIcon, LinkIcon, RefreshCcwIcon, TextCursorInputIcon } from "lucide-react";
 import { DeleteFile } from "./context/DeleteFile";
-import { directoryAtom } from "@/lib/atoms/directoryAtom";
+import { FileEdit } from "./FileEdit";
 
 export const ContentRenderer = () => {
     const { mode, setMode } = useMode();
@@ -23,6 +25,7 @@ export const ContentRenderer = () => {
     const [path, setPath] = useAtom(pathAtom);
     const [, setDirectory] = useAtom(directoryAtom);
     const [, setDialogContext] = useAtom(dialogContextAtom);
+    const [appState, setAppState] = useAtom(appStateAtom);
 
     const selectItem = (id: string) => {
         setSelecteds((prev) => {
@@ -54,6 +57,10 @@ export const ContentRenderer = () => {
         );
     }
 
+    if (appState.state === 'editing') {
+        return <FileEdit />
+    }
+
     if (content.raw.length === 0) {
         return (
             <div className="flex items-center justify-center h-full">
@@ -75,8 +82,16 @@ export const ContentRenderer = () => {
                             </div>
                         </ContextMenuTrigger>
                         <ContextMenuContent className="w-64">
+                            {file.fileType === 'file' && (
+                                <ContextMenuItem onClick={() => {
+                                    setAppState({ state: 'editing', loading: false, ref: file });
+                                }}>
+                                    <Edit2Icon className="w-4 h-4 mr-2" strokeWidth={ICON_STROKE_WIDTH} />
+                                    Edit
+                                </ContextMenuItem>
+                            )}
                             <ContextMenuItem>
-                                <Edit2Icon className="w-4 h-4 mr-2" strokeWidth={ICON_STROKE_WIDTH} />
+                                <TextCursorInputIcon className="w-4 h-4 mr-2" strokeWidth={ICON_STROKE_WIDTH} />
                                 Rename
                             </ContextMenuItem>
                             <ContextMenuItem onClick={() => {
@@ -90,7 +105,7 @@ export const ContentRenderer = () => {
                                 selectItem(file.id);
                                 setMode('copy', file.fileType);
                             }}>
-                                <ClipboardCopy className="w-4 h-4 mr-2" strokeWidth={ICON_STROKE_WIDTH} />
+                                <CopyIcon className="w-4 h-4 mr-2" strokeWidth={ICON_STROKE_WIDTH} />
                                 Copy
                             </ContextMenuItem>
                             <ContextMenuItem onClick={() => setDialogContext({ currentDialog: file.fileType == 'directory' ? 'delete-folder' : 'delete-file', ref: file })}>
