@@ -6,7 +6,9 @@ import { DeleteFile } from "@/components/context/DeleteFile";
 import { DeleteFolder } from "@/components/context/DeleteFolder";
 import { FileUpload } from "@/components/context/FileUpload";
 import { ModeDialog } from "@/components/context/ModeDialog";
+import { RenameDialog } from "@/components/context/RenameDialog";
 import { DirectoryRenderer } from "@/components/DirectoryRenderer";
+import { Footer } from "@/components/Footer";
 import { SearchPopup } from "@/components/SearchPopup";
 import { TestComponent } from "@/components/TestComponent";
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from "@/components/ui/resizable";
@@ -80,6 +82,8 @@ export default function Home() {
       <DeleteFolder />
       <DeleteFile />
       <FileUpload />
+      <RenameDialog />
+      <Footer />
       <TestComponent />
     </div>
   );

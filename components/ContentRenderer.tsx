@@ -88,7 +88,7 @@ export const ContentRenderer = () => {
                                     Edit
                                 </ContextMenuItem>
                             )}
-                            <ContextMenuItem>
+                            <ContextMenuItem onClick={() => setDialogContext({ currentDialog: 'rename', ref: file })}>
                                 <TextCursorInputIcon className="w-4 h-4 mr-2" strokeWidth={ICON_STROKE_WIDTH} />
                                 Rename
                             </ContextMenuItem>

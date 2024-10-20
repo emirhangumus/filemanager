@@ -9,9 +9,6 @@ import { actionSchemaMap, schema } from "./schema";
  * - Add tests
  * - Add security for file operations (e.g. check if the user has the right permissions - User can not delete other user's files)
  */
-
-
-
 export async function POST(request: Request) {
     try {
         const body = await request.json();

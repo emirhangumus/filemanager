@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-const typeSchema = z.enum(["create-dir", "delete-dir", "delete-file", "move", "copy", "cat-file", "write-file", "upload"]);
+const typeSchema = z.enum(["create-dir", "delete-dir", "delete-file", "move", "copy", "cat-file", "write-file", "upload", "rename"]);
 type ActionTypes = z.infer<typeof typeSchema>;
 
 export const schema = z.object({
@@ -43,5 +43,9 @@ export const actionSchemaMap: Record<ActionTypes, z.ZodObject<any, any>> = {
     "upload": z.object({
         path: z.string(),
         file: z.any(),
+    }),
+    "rename": z.object({
+        name: z.string(),
+        path: z.string(),
     }),
 }

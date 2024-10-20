@@ -71,8 +71,14 @@ export const execCLI = async (type: keyof typeof actionSchemaMap, validation: ty
         env = {
             FM_ITEMS: JSON.stringify(items),
         }
-    }
-    else {
+    } else if (type === 'rename') {
+        const { name, path } = validation.parse(data);
+        file = "rename";
+        env = {
+            FM_NAME: name,
+            FM_PATH: path,
+        }
+    } else {
         throw new Error("Invalid type");
     }
 
