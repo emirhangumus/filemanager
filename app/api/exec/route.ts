@@ -15,7 +15,6 @@ export async function POST(request: Request) {
         const { type } = schema.parse(body);
 
         const execResult = await execCLI(type, actionSchemaMap[type], body);
-        console.log("execResult -> ", execResult);
 
         return r({ success: true, data: execResult });
 

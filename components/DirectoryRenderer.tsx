@@ -98,8 +98,6 @@ const DirectoryTreeRenderer = ({ tree, level, path }: { tree: DirectoryTree, lev
             ...prev,
             openDirectories: prev.openDirectories.includes(path) ? prev.openDirectories.filter((item) => item !== path) : [...prev.openDirectories, path],
         }));
-        console.log(directories);
-
     }
 
     return (

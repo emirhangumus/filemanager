@@ -12,9 +12,10 @@ import { selectedsAtom } from "@/lib/atoms/selectedsAtom";
 import { ICON_STROKE_WIDTH } from "@/lib/constants";
 import { useMode } from "@/lib/hooks/useModHook";
 import { LsLongFormat } from "@/lib/types";
-import { isArchive } from "@/lib/utils";
+import { isArchive, isDirectory, isDocument, isProgramingRelatedFile, isText } from "@/lib/utils";
 import { useAtom } from "jotai";
-import { CopyIcon, DeleteIcon, DownloadIcon, Edit2Icon, FileArchiveIcon, FileIcon, FileQuestionIcon, Folder, FolderInputIcon, LinkIcon, RefreshCcwIcon, TextCursorInputIcon } from "lucide-react";
+import { BlocksIcon, BookOpenTextIcon, CopyIcon, DeleteIcon, Edit2Icon, FileArchiveIcon, FileIcon, FileQuestionIcon, FileTextIcon, Folder, FolderInputIcon, LinkIcon, RefreshCcwIcon, TextCursorInputIcon } from "lucide-react";
+import { DownloadFile } from "./DownloadFile";
 import { ExtractArchive } from "./ExtractArchive";
 import { FileEdit } from "./FileEdit";
 
@@ -120,10 +121,9 @@ export const ContentRenderer = () => {
                                 <RefreshCcwIcon className="w-4 h-4 mr-2" strokeWidth={ICON_STROKE_WIDTH} />
                                 Refresh
                             </ContextMenuItem>
-                            <ContextMenuItem>
-                                <DownloadIcon className="w-4 h-4 mr-2" strokeWidth={ICON_STROKE_WIDTH} />
-                                Download
-                            </ContextMenuItem>
+                            {!isDirectory(file.fileType) && (
+                                <DownloadFile file={file} />
+                            )}
                         </ContextMenuContent>
                     </ContextMenu>
                 ))}
@@ -134,8 +134,24 @@ export const ContentRenderer = () => {
 
 const FileIconRenderer = ({ fileType, extension }: { fileType: LsLongFormat['fileType'], extension: LsLongFormat['fileExtension'] }) => {
 
+    if (isProgramingRelatedFile(extension)) {
+        return <BlocksIcon className="w-6 h-6" strokeWidth={ICON_STROKE_WIDTH} />
+    }
+
     if (isArchive(extension)) {
         return <FileArchiveIcon className="w-6 h-6" strokeWidth={ICON_STROKE_WIDTH} />
+    }
+
+    if (isDirectory(fileType)) {
+        return <Folder className="w-6 h-6" strokeWidth={ICON_STROKE_WIDTH} />
+    }
+
+    if (isText(extension)) {
+        return <FileTextIcon className="w-6 h-6" strokeWidth={ICON_STROKE_WIDTH} />
+    }
+
+    if (isDocument(extension)) {
+        return <BookOpenTextIcon className="w-6 h-6" strokeWidth={ICON_STROKE_WIDTH} />
     }
 
     return (

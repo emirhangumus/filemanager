@@ -4,8 +4,8 @@ import "./globals.css";
 import { Toaster } from "@/components/ui/sonner";
 
 export const metadata: Metadata = {
-  title: "BashUI by MadCorp",
-  description: "Create quick and easy bash scripts with UI",
+  title: "File Manager by MadCorp",
+  description: "A simple web based file manager",
 };
 
 export default function RootLayout({
@@ -18,9 +18,7 @@ export default function RootLayout({
       <body
         className={`${inter.className} antialiased`}
       >
-        <div className="grid place-items-center h-screen">
-          {children}
-        </div>
+        {children}
         <Toaster />
       </body>
     </html>

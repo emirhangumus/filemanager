@@ -30,3 +30,5 @@ export type DirectoryTree = {
 }
 
 export type ExecType = "create-dir" | "delete-dir" | "delete-file" | "move" | "copy";
+
+export type SafeReturn<T> = [Error | null, T | null];
