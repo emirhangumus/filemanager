@@ -12,7 +12,7 @@ import { selectedsAtom } from "@/lib/atoms/selectedsAtom";
 import { ICON_STROKE_WIDTH } from "@/lib/constants";
 import { useMode } from "@/lib/hooks/useModHook";
 import { LsLongFormat } from "@/lib/types";
-import { isArchive, isDirectory, isDocument, isProgramingRelatedFile, isText } from "@/lib/utils";
+import { humanFileSize, isArchive, isDirectory, isDocument, isProgramingRelatedFile, isText } from "@/lib/utils";
 import { useAtom } from "jotai";
 import { BlocksIcon, BookOpenTextIcon, CopyIcon, DeleteIcon, Edit2Icon, FileArchiveIcon, FileIcon, FileQuestionIcon, FileTextIcon, Folder, FolderInputIcon, LinkIcon, RefreshCcwIcon, TextCursorInputIcon } from "lucide-react";
 import { DownloadFile } from "./DownloadFile";
@@ -47,6 +47,7 @@ export const ContentRenderer = () => {
                 invalidate: true,
             }));
             setDirectory((prev) => ({ ...prev, invalidate: true }))
+            setSelecteds([]);
         }
     }
 
@@ -77,9 +78,15 @@ export const ContentRenderer = () => {
                     <ContextMenu key={file.id}>
                         <ContextMenuTrigger className="flex items-center p-2 border-b hover:bg-zinc-900 transition-colors gap-8 px-4" onDoubleClick={() => onDoubleClick(file)}>
                             {!mode ? <Checkbox checked={selecteds.includes(file.id)} onCheckedChange={() => selectItem(file.id)} /> : null}
-                            <div className="flex items-center gap-2">
-                                <FileIconRenderer fileType={file.fileType} extension={file.fileExtension} />
-                                <span>{file.name}</span>
+                            <div className="flex-1 flex items-center justify-between">
+                                <div className="flex items-center gap-2">
+                                    <FileIconRenderer fileType={file.fileType} extension={file.fileExtension} />
+                                    <span>{file.name}</span>
+                                </div>
+                                <div className="flex items-center gap-2">
+                                    <span className="text-sm text-right">{file.owner}</span>
+                                    <span className="text-sm w-20 text-right">{file.size !== null ? humanFileSize(file.size) : '-'}</span>
+                                </div>
                             </div>
                         </ContextMenuTrigger>
                         <ContextMenuContent className="w-64">
@@ -163,4 +170,3 @@ const FileIconRenderer = ({ fileType, extension }: { fileType: LsLongFormat['fil
         </>
     )
 }
-

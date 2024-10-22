@@ -1,0 +1,52 @@
+services:
+  filemanager_db:
+    container_name: filemanager_db
+    image: postgres
+    volumes:
+      - filemanager_db_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    env_file:
+      - .env.production
+    networks:
+      filemanager_net:
+        ipv4_address: 172.22.0.2
+
+  filemanager_pgadmin:
+    container_name: filemanager_pgadmin
+    image: dpage/pgadmin4
+    volumes:
+      - filemanager_pgadmin_data:/var/lib/pgadmin
+    ports:
+      - "5555:80"
+    env_file:
+      - .env.production
+    networks:
+      filemanager_net:
+        ipv4_address: 172.22.0.3
+
+  filemanager_web:
+    container_name: filemanager_web
+    build: .
+    ports:
+      - "3000:3000"
+    env_file:
+      - .env.production
+    depends_on:
+      - filemanager_db
+    networks:
+      filemanager_net:
+        ipv4_address: 172.22.0.4
+
+networks:
+  filemanager_net:
+    name: "filemanager_net"
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.22.0.0/16
+          gateway: 172.22.0.1
+
+volumes:
+  filemanager_db_data:
+  filemanager_pgadmin_data:

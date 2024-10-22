@@ -19,7 +19,8 @@ import { useMode } from "@/lib/hooks/useModHook";
 import { cn } from "@/lib/utils";
 import { useAtom } from "jotai";
 import { useEffect } from "react";
-import { Button } from "./ui/button";
+import { ArchiveDialog } from "./context/ArchiveDialog";
+import { LogoutButton } from "./LogoutButton";
 
 export function FileManager() {
     const [path, setPath] = useAtom(pathAtom);
@@ -58,13 +59,17 @@ export function FileManager() {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [path.invalidate]);
 
+    if (!user) {
+        return null;
+    }
+
     return (
         <div className="flex flex-col w-full gap-4 py-8">
             <div className="flex justify-between items-center container mx-auto">
                 <div className="flex items-center space-x-2">
                     <div className="text-sm text-gray-500">Welcome, {user.username}</div>
                 </div>
-                <Button onClick={() => fetch("/api/auth/logout", { method: "POST", credentials: "include" })}>Logout</Button>
+                <LogoutButton />
             </div>
             <div className="container mx-auto h-[800px] border">
                 <ResizablePanelGroup
@@ -93,6 +98,7 @@ export function FileManager() {
                 <DeleteFile />
                 <FileUpload />
                 <RenameDialog />
+                <ArchiveDialog />
                 <Footer />
                 <TestComponent />
             </div>

@@ -8,7 +8,7 @@ import { selectedsAtom } from "@/lib/atoms/selectedsAtom";
 import { ICON_STROKE_WIDTH } from "@/lib/constants";
 import { useMode } from "@/lib/hooks/useModHook";
 import { useAtom } from "jotai";
-import { ArrowLeftIcon, CopyIcon, DeleteIcon, DownloadIcon, FolderInputIcon, RefreshCcwIcon, UploadIcon, XIcon } from "lucide-react";
+import { ArchiveIcon, ArrowLeftIcon, CopyIcon, DeleteIcon, DownloadIcon, FolderInputIcon, RefreshCcwIcon, UploadIcon, XIcon } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 import { Checkbox } from "./ui/checkbox";
 import { LsLongFormat } from "@/lib/types";
@@ -109,7 +109,7 @@ export const ActionBar = () => {
         return (
             <div className="flex items-center justify-between w-full">
                 <div className="flex items-center gap-4 p-4">
-                    <Checkbox checked={selecteds.length === content.raw.length} onCheckedChange={selectAll} className="mr-4" />
+                    <Checkbox checked={selecteds.length === content.raw.length && content.raw.length > 0} onCheckedChange={selectAll} className="mr-4" />
                     <button onClick={goBack} disabled={path.pathStack.length === 0} className="disabled:opacity-50 disabled:cursor-not-allowed">
                         <ArrowLeftIcon className="w-6 h-6" strokeWidth={ICON_STROKE_WIDTH} />
                     </button>
@@ -132,7 +132,7 @@ export const ActionBar = () => {
     return (
         <div className="flex items-center justify-between w-full">
             <div className="flex items-center gap-4 p-4">
-                <Checkbox checked={selecteds.length === content.raw.length} onCheckedChange={selectAll} className="mr-4" />
+                <Checkbox checked={selecteds.length === content.raw.length && content.raw.length > 0} onCheckedChange={selectAll} className="mr-4" />
                 <button onClick={goBack} disabled={path.pathStack.length === 0} className="disabled:opacity-50 disabled:cursor-not-allowed">
                     <ArrowLeftIcon className="w-6 h-6" strokeWidth={ICON_STROKE_WIDTH} />
                 </button>
@@ -143,6 +143,9 @@ export const ActionBar = () => {
                 </button>
                 <button onClick={() => setMode('copy', localType)} disabled={!localType} className="disabled:opacity-50 disabled:cursor-not-allowed">
                     <CopyIcon className="w-6 h-6" strokeWidth={ICON_STROKE_WIDTH} />
+                </button>
+                <button onClick={() => setDialogContext({ currentDialog: 'archive', ref: null })}>
+                    <ArchiveIcon className="w-6 h-6" strokeWidth={ICON_STROKE_WIDTH} />
                 </button>
                 <div className="border-r h-full"></div>
                 <button onClick={() => setDialogContext({ currentDialog: localType == 'directory' ? 'delete-folder' : 'delete-file', ref: selectedWithContent[0] ? selectedWithContent[0] : null })} disabled={!localType} className="disabled:opacity-50 disabled:cursor-not-allowed">

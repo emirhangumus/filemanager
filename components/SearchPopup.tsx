@@ -54,9 +54,7 @@ export const SearchPopup = () => {
             }
         });
         return () => {
-            window.removeEventListener("keydown", () => {
-                console.log("removed");
-            });
+            window.removeEventListener("keydown", () => { });
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);

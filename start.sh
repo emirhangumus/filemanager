@@ -4,4 +4,4 @@ npx prisma db push
 
 echo "Starting server..."
 
-exec npm run start
+exec node server.js

@@ -1,6 +1,7 @@
 import { z } from "zod";
 
-const typeSchema = z.enum(["create-dir", "delete-dir", "delete-file", "move", "copy", "cat-file", "write-file", "upload", "rename", "extract"]);
+const archiveFormatSchema = z.enum(["zip", "tar"]);
+const typeSchema = z.enum(["create-dir", "delete-dir", "delete-file", "move", "copy", "cat-file", "write-file", "upload", "rename", "extract", "archive"]);
 type ActionTypes = z.infer<typeof typeSchema>;
 
 export const schema = z.object({
@@ -38,7 +39,7 @@ export const actionSchemaMap: Record<ActionTypes, z.ZodObject<any, any>> = {
     }),
     "write-file": z.object({
         path: z.string(),
-        content: z.string(),
+        content: z.string().optional(),
     }),
     "upload": z.object({
         path: z.string(),
@@ -51,6 +52,12 @@ export const actionSchemaMap: Record<ActionTypes, z.ZodObject<any, any>> = {
     "extract": z.object({
         target: z.string(),
         source: z.string(),
-        extractType: z.enum(["zip", "tar"]),
+        extractType: archiveFormatSchema,
+    }),
+    "archive": z.object({
+        path: z.string(),
+        name: z.string(),
+        items: z.array(z.string()),
+        format: archiveFormatSchema,
     }),
 }

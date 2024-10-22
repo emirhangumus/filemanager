@@ -11,7 +11,6 @@ import {
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import axios from "axios"
-import { useRouter } from "next/navigation"
 import { useState } from "react"
 
 export default function LoginForm() {
@@ -26,7 +25,6 @@ export default function LoginForm() {
         error: null,
         message: null,
     });
-    const router = useRouter();
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
@@ -40,7 +38,7 @@ export default function LoginForm() {
 
             if (response.data.success) {
                 setState({ loading: false, error: null, message: "Logged in successfully" });
-                router.push("/manager");
+                window.location.href = "/manager"; // Clears the state :P (ik its not the way)
             } else {
                 setState({ loading: false, error: response.data.error, message: null });
             }

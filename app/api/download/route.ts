@@ -5,9 +5,9 @@ import { readFile } from "fs/promises";
 import { NextRequest } from "next/server";
 
 export async function GET(req: NextRequest) {
-    try {
+    const fm_session = req.cookies.get("fm_session");
 
-        const fm_session = req.cookies.get("fm_session");
+    try {
 
         if (!fm_session) {
             return r({ success: false, error: "You are not logged in" }, 401);

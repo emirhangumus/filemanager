@@ -53,7 +53,7 @@ export const execCLI = async (type: keyof typeof actionSchemaMap, validation: ty
         const { content, path } = validation.parse(data);
         file = "write";
         env = {
-            FM_CONTENT: content,
+            FM_CONTENT: content ?? "",
             FM_PATH: path,
         }
     } else if (type === 'upload') {
@@ -85,6 +85,15 @@ export const execCLI = async (type: keyof typeof actionSchemaMap, validation: ty
             FM_TARGET: target,
             FM_SOURCE: source,
             FM_EXTRACT_TYPE: extractType,
+        }
+    } else if (type === 'archive') {
+        const { name, items, format, path } = validation.parse(data);
+        file = "archive";
+        env = {
+            FM_PATH: path,
+            FM_NAME: name,
+            FM_ITEMS: JSON.stringify(items),
+            FM_FORMAT: format,
         }
     }
     else {

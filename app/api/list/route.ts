@@ -1,7 +1,8 @@
 import { CONTENT_LIST_COMMAND, DIRECTORY_LIST_COMMAND } from "@/lib/constants";
 import { r } from "@/lib/r";
 import type { DirectoryTree, LsLongFormat } from "@/lib/types";
-import { spawn } from "child_process";
+import { trimChars } from "@/lib/utils";
+import { spawnSync } from "node:child_process";
 import { z } from "zod";
 
 const schema = z.object({
@@ -9,26 +10,11 @@ const schema = z.object({
     type: z.enum(["content-list", "directory-list"]),
 });
 
-export const trimChars = (input: string, chars: string) => {
-    let start = 0
-    let end = input.length
-
-    while (start < end && chars.includes(input[start])) {
-        start += 1
-    }
-
-    while (end > start && chars.includes(input[end - 1])) {
-        end -= 1
-    }
-
-    return start > 0 || end < input.length ? input.substring(start, end) : input
-}
-
 export async function POST(request: Request) {
     try {
         const { path, type } = schema.parse(await request.json());
 
-        const child = spawn(type === 'content-list' ? CONTENT_LIST_COMMAND : DIRECTORY_LIST_COMMAND, { shell: true, cwd: path });
+        const child = spawnSync(type === 'content-list' ? CONTENT_LIST_COMMAND : DIRECTORY_LIST_COMMAND, { shell: true, cwd: path });
         let output = "";
 
         for await (const chunk of child.stdout) {

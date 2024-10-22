@@ -4,6 +4,8 @@ import { r } from "@/lib/r";
 import type { NextRequest } from "next/server";
 import { z } from "zod";
 
+export const dynamic = 'force-dynamic';
+
 const loginSchema = z.object({
     emailOrUsername: z.string(),
     password: z.string(),
@@ -30,7 +32,7 @@ export async function POST(request: NextRequest) {
             return r({ success: false, error: "Invalid password" });
         }
 
-        const session = await createSession(user.id, request.headers.get("user-agent") ?? "", request.headers.get("x-forwarded-for") ?? "");
+        const session = await createSession(user.id);
 
         return r({ success: true }, 201, {
             setCookie: [

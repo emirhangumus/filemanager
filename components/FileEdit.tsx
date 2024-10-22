@@ -54,6 +54,7 @@ export const FileEdit = () => {
             </div>
         );
     }
+    console.log(editingFile.split("\n"));
 
     const lineNumbers = editingFile.split("\n").length;
 
@@ -68,7 +69,7 @@ export const FileEdit = () => {
                 ))}
             </div>
             <textarea
-                value={editingFile ?? ""}
+                value={editingFile}
                 onChange={(e) => setEditingFile(e.target.value)}
                 onScroll={handleScroll} // Attach the scroll event handler
                 className="outline-none w-full h-full p-2 text-sm font-mono bg-zinc-900 text-white"
@@ -91,7 +92,7 @@ export const FileEditHeader = () => {
                 body: JSON.stringify({
                     type: 'write-file',
                     path: appState.ref?.id,
-                    content: editingFile,
+                    content: editingFile ?? "",
                 }),
             }).then((res) => res.json());
 

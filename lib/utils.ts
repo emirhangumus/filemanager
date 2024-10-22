@@ -24,6 +24,26 @@ export function realMerge(to: Record<string, any>, from: Record<string, any>) {
   return to;
 };
 
+export const trimChars = (input: string, chars: string) => {
+  let start = 0
+  let end = input.length
+
+  while (start < end && chars.includes(input[start])) {
+    start += 1
+  }
+
+  while (end > start && chars.includes(input[end - 1])) {
+    end -= 1
+  }
+
+  return start > 0 || end < input.length ? input.substring(start, end) : input
+}
+
+export function humanFileSize(size: number) {
+  const i = size == 0 ? 0 : Math.floor(Math.log(size) / Math.log(1024));
+  return +((size / Math.pow(1024, i)).toFixed(2)) * 1 + ' ' + ['B', 'kB', 'MB', 'GB', 'TB'][i];
+}
+
 export const isArchive = (extenstion: string | null): boolean => {
   if (!extenstion) return false;
   return VALID_ARCHIVE_EXTENSIONS.includes(extenstion as typeof VALID_ARCHIVE_EXTENSIONS[number]);

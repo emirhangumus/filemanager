@@ -19,7 +19,7 @@ export type LsLongFormat = {
         };
     }
     owner: string;
-    size: number;
+    size: number | null;
     lastModified: Date;
     name: string;
     fileExtension: string | null;

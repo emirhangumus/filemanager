@@ -3,4 +3,4 @@ import { atom } from "jotai";
 
 export type CurrentUser = Omit<User, "password" | "createdAt" | "updatedAt"> & Omit<Account, "createdAt" | "updatedAt" | "userId">;
 
-export const currentUserAtom = atom<CurrentUser>({} as CurrentUser);
+export const currentUserAtom = atom<CurrentUser | null>(null);

@@ -14,7 +14,8 @@ type Options = {
         name: string;
         value: string;
         options: Partial<ResponseCookie>
-    }[]
+    }[],
+    removeCookie?: string[]
 }
 
 export const r = <T>(body: R<T>, statusCode: number = 200, options?: Options) => {
@@ -23,6 +24,12 @@ export const r = <T>(body: R<T>, statusCode: number = 200, options?: Options) =>
     if (options?.setCookie) {
         for (const cookie of options.setCookie) {
             response.cookies.set(cookie.name, cookie.value, cookie.options);
+        }
+    }
+
+    if (options?.removeCookie) {
+        for (const cookie of options.removeCookie) {
+            response.cookies.delete(cookie);
         }
     }
 
