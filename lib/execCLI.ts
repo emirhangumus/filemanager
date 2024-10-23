@@ -4,6 +4,7 @@ import fs from "fs";
 import _path from "path";
 import { Readable } from 'stream'; // Import Readable stream for buffer wrapping
 import { CurrentUser } from "./atoms/currentUserAtom";
+import { USER_LOGIN_CMD_ARRAY } from "./constants";
 
 export const execCLI = async (type: keyof typeof actionSchemaMap, validation: typeof actionSchemaMap[keyof typeof actionSchemaMap], data: any, user: CurrentUser) => {
 
@@ -105,8 +106,7 @@ export const execCLI = async (type: keyof typeof actionSchemaMap, validation: ty
         throw new Error("Invalid type");
     }
 
-    // const username = user.username; // TODO: Get the username from the database
-    const cmd = `su -s /bin/bash -c 'node ./execCLI/${file}.js' ${user.username}`;
+    const cmd = USER_LOGIN_CMD_ARRAY[0] + file + USER_LOGIN_CMD_ARRAY[1] + ' ' + user.username;
 
     console.log("Executing command...", cmd);
     console.log("Env...", env);
