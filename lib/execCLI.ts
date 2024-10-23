@@ -2,9 +2,10 @@ import { actionSchemaMap } from "@/app/api/exec/schema";
 import { spawn } from "child_process";
 import fs from "fs";
 import _path from "path";
-import { Readable } from 'stream';  // Import Readable stream for buffer wrapping
+import { Readable } from 'stream'; // Import Readable stream for buffer wrapping
+import { CurrentUser } from "./atoms/currentUserAtom";
 
-export const execCLI = async (type: keyof typeof actionSchemaMap, validation: typeof actionSchemaMap[keyof typeof actionSchemaMap], data: any) => {
+export const execCLI = async (type: keyof typeof actionSchemaMap, validation: typeof actionSchemaMap[keyof typeof actionSchemaMap], data: any, user: CurrentUser) => {
 
     let file: string | undefined = undefined;
     let env: { [key: string]: string } = {};
@@ -104,8 +105,8 @@ export const execCLI = async (type: keyof typeof actionSchemaMap, validation: ty
         throw new Error("Invalid type");
     }
 
-    const username = "emirhan"; // TODO: Get the username from the database
-    const cmd = `su -s /bin/bash -c 'node ./execCLI/${file}.js' ${username}`;
+    // const username = user.username; // TODO: Get the username from the database
+    const cmd = `su -s /bin/bash -c 'node ./execCLI/${file}.js' ${user.username}`;
 
     console.log("Executing command...", cmd);
     console.log("Env...", env);

@@ -1,11 +1,12 @@
 import { AtomHydration } from "@/components/AtomHydration";
 import { FileManager } from "@/components/FileManager";
 import { CurrentUser } from "@/lib/atoms/currentUserAtom";
+import { SESSION_COOKIE_NAME } from "@/lib/constants";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 
 export default async function Page() {
-    const cookie = cookies().get("fm_session");
+    const cookie = cookies().get(SESSION_COOKIE_NAME);
 
     if (!cookie) {
         redirect("/join");

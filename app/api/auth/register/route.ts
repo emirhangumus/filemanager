@@ -1,3 +1,4 @@
+import { SESSION_COOKIE_NAME } from "@/lib/constants";
 import db from "@/lib/db";
 import { createPasswordHash, createSession } from "@/lib/db/auth";
 import { r } from "@/lib/r";
@@ -8,9 +9,9 @@ const registerSchema = z.object({
     name: z.string().min(3),
     lastName: z.string().min(3),
     email: z.string().email(),
-    username: z.string().min(3),
+    username: z.string().min(3).max(20).regex(/^[a-zA-Z0-9_]+$/),
     password: z.string().min(8),
-    confirmPassword: z.string(),
+    confirmPassword: z.string().min(8),
 });
 
 export async function POST(request: NextRequest) {
@@ -54,7 +55,7 @@ export async function POST(request: NextRequest) {
         return r({ success: true }, 201, {
             setCookie: [
                 {
-                    name: "fm_session",
+                    name: SESSION_COOKIE_NAME,
                     value: session.id,
                     options: {
                         httpOnly: true,

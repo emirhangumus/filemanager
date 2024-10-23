@@ -9,7 +9,7 @@ type PathAtom = {
 
 export const pathAtom = atom<PathAtom>({
     pathStack: [],
-    currentPath: "/home/emirhan/Workspace/web/filemanager/playground",
+    currentPath: "",
     invalidate: true,
     loading: true,
 });

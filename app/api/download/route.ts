@@ -1,22 +1,21 @@
-import { validateSessionToken } from "@/lib/db/auth";
+import { checkRequestAuth } from "@/lib/db/auth/checkRequestAuth";
 import { r } from "@/lib/r";
 import { getContentType } from "@/lib/utils";
 import { readFile } from "fs/promises";
 import { NextRequest } from "next/server";
 
 export async function GET(req: NextRequest) {
-    const fm_session = req.cookies.get("fm_session");
+    const [errorResponse, auth] = await checkRequestAuth(req);
 
     try {
-
-        if (!fm_session) {
-            return r({ success: false, error: "You are not logged in" }, 401);
+        if (errorResponse) {
+            return errorResponse;
         }
 
-        const { user, session } = await validateSessionToken(fm_session.value);
+        const { user } = auth;
 
-        if (!user || !session) {
-            return r({ success: false, error: "You are not logged in" }, 401);
+        if (!user) {
+            return r({ success: false, error: "Invalid user" }, 401);
         }
 
         const searchParams = req.nextUrl.searchParams

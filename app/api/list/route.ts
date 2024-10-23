@@ -1,7 +1,9 @@
 import { CONTENT_LIST_COMMAND, DIRECTORY_LIST_COMMAND } from "@/lib/constants";
+import { checkRequestAuth } from "@/lib/db/auth/checkRequestAuth";
 import { r } from "@/lib/r";
 import type { DirectoryTree, LsLongFormat } from "@/lib/types";
 import { trimChars } from "@/lib/utils";
+import { NextRequest } from "next/server";
 import { spawn } from "node:child_process";
 import { z } from "zod";
 
@@ -10,8 +12,14 @@ const schema = z.object({
     type: z.enum(["content-list", "directory-list"]),
 });
 
-export async function POST(request: Request) {
+export async function POST(request: NextRequest) {
+    const [errorResponse] = await checkRequestAuth(request);
+
     try {
+        if (errorResponse) {
+            return errorResponse;
+        }
+
         const { path, type } = schema.parse(await request.json());
 
         const child = spawn(type === 'content-list' ? CONTENT_LIST_COMMAND : DIRECTORY_LIST_COMMAND, { shell: true, cwd: path });

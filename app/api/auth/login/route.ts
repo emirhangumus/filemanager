@@ -1,3 +1,4 @@
+import { SESSION_COOKIE_NAME } from "@/lib/constants";
 import db from "@/lib/db";
 import { createSession, validatePassword } from "@/lib/db/auth";
 import { r } from "@/lib/r";
@@ -37,7 +38,7 @@ export async function POST(request: NextRequest) {
         return r({ success: true }, 201, {
             setCookie: [
                 {
-                    name: "fm_session",
+                    name: SESSION_COOKIE_NAME,
                     value: session.id,
                     options: {
                         httpOnly: true,
